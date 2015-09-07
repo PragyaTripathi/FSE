@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8"> 
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="bootstrap.min.css">
+	<link rel="stylesheet" href="main.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+	<div id="username">
+		<h1>Welcome to FSE Chatroom</h1>
+		<div class="progress">
+			<div class="progress-bar" style="width: 100%">
+			</div>
+		</div>
+		<form id="usernameForm" action="">
+			<input class="form-control" type="text" id="usernameInput" autocomplete="off" placeholder="Enter your name"/>
+			<button class="btn btn-primary btn-lg">Enter</button>
+			<div id="error" class="text-danger"></div>
+		</form>
+	</div>
+	<div id="message" style="display: none;">
+		<div class="header">
+			<div id="headerTitle">FSE Chatroom</div>
+			<div class="logout-button">
+				<a id="logoutButton">Logout</a>
+			</div>
+		</div>
+		<div id="headerSeparator"></div>
+		<div id="scrollingMessages">
+			<ul id="messages"></ul>
+		</div>
+		<form id="messageForm" action="">
+			<input class="form-control input-lg" type="text" id="messageInput" autocomplete="off" />
+			<div id="sendbutton"><button class="btn btn-primary btn-lg">Send</button></div>
+		</form>
+	</div>
+	<script>
+		var socket = io();
+
+		$('input#usernameInput').keypress(function() {
+    	$('#error').text('');
+    	$(this).focus();
+		});
+
+		$('#usernameForm').submit(function(){
+			var user = $('#usernameInput').val();
+			console.log('user: ' + user);
+			if (user.trim().length > 0) {
+				console.log('emitting user entered');
+				socket.emit('user entered', user);
+			} else {
+				$('#error').text('You must enter a valid username');
+			}
+			$('#usernameInput').val('');
+			return false;
+		});
+
+		socket.on('user validated', function(username, rows){
+			$('#username').hide('slow');
+			$('#message').show('slow');
+			rows.forEach(function(row){
+				$('#messages').append($('<li>').html('<div class="msg-container"><div class="username">' +row.username + '</div><div class="timestamp">' + new Date(Number(row.timestamp)) + '</div></div><div class="msg"> ' +row.message + '</div>'));
+			});
+		});
+
+		socket.on('username error', function(error){
+			$('#error').text(error);
+		});
+
+		$('#messageForm').submit(function() {
+			var message = $('#messageInput').val();
+			if (message.trim().length > 0) {
+				socket.emit('chat message', {
+					name : '',
+					msg : message,
+					timestamp : Date.now()
+				});
+			}
+			$('#messageInput').val('');
+			return false;
+		});
+
+		$('#logoutButton').click(function(){
+			socket.emit('logout',{});
+		});
+		socket.on('user login', function(message) {
+			$('#messages').append($('<li>').html('<div class="broadcast">'+ message + '</div>'));
+		});
+		socket.on('user exit', function(message) {
+			$('#messages').append($('<li>').html('<div class="broadcast">'+ message + '</div>'));
+		});
+		socket.on('chat message', function(data){
+			$('#messages').append($('<li>').html('<div class="msg-container"><div class="username">' +data.name + '</div><div class="timestamp">' + new Date(Number(data.timestamp)) + '</div></div><div class="msg"> ' +data.msg + '</div>'));
+		});
+		socket.on('logged out', function(){
+			$('#username').show('slow');
+			$('#message').hide('slow');
+		});
+
+	</script>
+</body>
+</html>

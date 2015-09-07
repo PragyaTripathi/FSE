@@ -1,0 +1,126 @@
+body { 
+	font-size: 13px;
+	background: #0EBFE9 no-repeat;
+	/*font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;*/
+ }
+
+#usernameForm {     
+	text-align: center;
+	min-width: 280px;
+	max-width: 3000px;
+	clear:both; 
+}
+
+.form-control {
+	display: unset;
+}
+
+#usernameForm input {
+	width: 50%;
+	padding: 10px; 
+	height: 50px;
+	margin: 20px;
+	display: inline;
+}
+
+#messageForm { 
+	text-align: center; 
+	padding: 3px; 
+	bottom: 0;  
+	clear:both; 
+	position: absolute;
+	width: 100%;
+}
+
+#messageForm input { 
+	border: 0; 
+	padding: 10px; 
+	margin-right: .5%; 
+}
+
+#sendbutton {
+	padding: 5px 0;
+}
+
+#messages { 
+	list-style-type: none; 
+	margin: 0; 
+	padding: 10px; 
+}
+#scrollingMessages {
+	overflow: scroll;
+	height: 400px;
+}
+#messages li { 
+	padding: 5px 10px; 
+	background-color: #fff;
+	opacity: 0.6;
+	border-radius: 10px;
+	margin: 5px 0 5px 0;
+	float: left;
+	width: 100%;
+}
+
+h1 {
+	color: white;
+	font-size: 48px;
+	padding:20px 20px 20px 0;
+	text-align: center;
+	min-width: 280px;
+	max-width: 3000px;
+	clear:both;
+}
+
+#headerSeparator {
+	width: 100%;
+	display: block;
+	background-color: #d9230f;
+	border-radius: 5px;
+	box-shadow: 2px;
+	height: 10px;
+	margin: 20px 0 0 0;
+}
+
+.header {
+	min-width: 280px;
+	max-width: 3000px;
+	font-size: 28px;
+	padding:20px;
+	display: block;
+}
+
+#headerTitle {
+	float: left;
+}
+
+.logout-button {
+	color: #000;
+	float: right;
+	position: inherit;
+}
+
+#logoutButton {
+	float: right;
+}
+
+.broadcast {
+	text-align: center;
+	color: #d9230f;
+}
+
+.username {
+	float: left;
+	font-size: 14px;
+}
+
+.timestamp {
+	float: right;
+	font-size: 12px;
+}
+
+.msg {
+	font-size: 16px;
+	color: #000;
+	display: inline-table;
+	width: 100%;
+}
