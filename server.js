@@ -43,6 +43,7 @@ io.on('connection', function(socket){
     			} else {
     				console.log(rows);
       				socket.emit('user validated', username, rows);
+      				socket.broadcast.emit('user login', username);
     			}
 			});
 		}
@@ -60,15 +61,19 @@ io.on('connection', function(socket){
 
 	// Logout
 	socket.on('logout', function(){
+		var username = getUserFromId(socket.id);
 		logoutUser(socket.id);
 		console.log('user disconnected ' + socket.id);
 		socket.emit('logged out');
+		socket.broadcast.emit('user exit', username);
 	});
 
 	socket.on('disconnect', function(){
+		var username = getUserFromId(socket.id);
 		logoutUser(socket.id);
 		console.log('socket disconnected ' + socket.id);
 		socket.emit('logged out');
+		socket.broadcast.emit('user exit', username);
 	});
 });
 
@@ -76,6 +81,10 @@ http.listen(3000, function(){
   console.log('listening on http://localhost:3000');
 });
 
+/** Check if the user is logged in
+* param username
+* return boolean true if the user is logged in, false otherwise
+*/
 function userIsLoggedIn(username) {
 	for (var i = 0; i < users.length; i++) {
 		var user = users[i];
@@ -86,6 +95,10 @@ function userIsLoggedIn(username) {
 	return false;
 }
 
+/** Get username from given socket id
+* param socketId
+* return username
+*/
 function getUserFromId(socketId) {
 	for (var i = 0; i < users.length; i++) {
 		var user = users[i];
@@ -98,7 +111,7 @@ function getUserFromId(socketId) {
 
 /** Logout the user with given socket id
 * Loop through users and filter out users who have the given socket id.
-* 
+* param socketId
 */
 function logoutUser(socketId) {
 	users = users.filter(function(user){

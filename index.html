@@ -63,7 +63,7 @@
 			$('#username').hide('slow');
 			$('#message').show('slow');
 			rows.forEach(function(row){
-				$('#messages').append($('<li>').html('<div class="msg-container"><div class="username">' +row.username + '</div><div class="timestamp">' + new Date(Number(row.timestamp)) + '</div></div><div class="msg"> ' +row.message + '</div>'));
+				$('#messages').append($('<li>').html('<div class="msg-container"><div class="username">' +row.username + '</div><div class="timestamp">' + getPresentableTime(row.timestamp) + '</div></div><div class="msg"> ' +row.message + '</div>'));
 			});
 		});
 
@@ -90,7 +90,7 @@
 
 		socket.on('chat message', function(data){
 			if($('#message').is(':visible')) {
-				$('#messages').append($('<li>').html('<div class="msg-container"><div class="username">' +data.name + '</div><div class="timestamp">' + new Date(Number(data.timestamp)) + '</div></div><div class="msg"> ' +data.msg + '</div>'));
+				$('#messages').append($('<li>').html('<div class="msg-container"><div class="username">' +data.name + '</div><div class="timestamp">' + getPresentableTime(data.timestamp) + '</div></div><div class="msg"> ' +data.msg + '</div>'));
 			}
 		});
 
@@ -101,13 +101,22 @@
 		});
 
 		socket.on('user login', function(message) {
-			$('#messages').append($('<li>').html('<div class="broadcast">'+ message + '</div>'));
+			if ($('#message').is(':visible')) {
+				$('#messages').append($('<li>').html('<div class="broadcast">'+ message + ' just joined</div>'));
+			}
 		});
 
 		socket.on('user exit', function(message) {
-			$('#messages').append($('<li>').html('<div class="broadcast">'+ message + '</div>'));
+			if ($('#message').is(':visible')) {
+				$('#messages').append($('<li>').html('<div class="broadcast">'+ message + ' has left the room</div>'));
+			}
 		});
 
+		function getPresentableTime(timestamp) {
+			var date = new Date(Number(timestamp));
+			var dateString = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+			return dateString;
+		}
 	</script>
 </body>
 </html>
