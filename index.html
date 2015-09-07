@@ -39,11 +39,11 @@
 		</form>
 	</div>
 	<script>
-		var socket = io();
+		var socket = io.connect("http://localhost:3000");
 
-		$('input#usernameInput').keypress(function() {
-    	$('#error').text('');
-    	$(this).focus();
+		$('#usernameInput').keypress(function() {
+    		$('#error').text('');
+    		$(this).focus();
 		});
 
 		$('#usernameForm').submit(function(){
@@ -87,18 +87,25 @@
 		$('#logoutButton').click(function(){
 			socket.emit('logout',{});
 		});
+
+		socket.on('chat message', function(data){
+			if($('#message').is(':visible')) {
+				$('#messages').append($('<li>').html('<div class="msg-container"><div class="username">' +data.name + '</div><div class="timestamp">' + new Date(Number(data.timestamp)) + '</div></div><div class="msg"> ' +data.msg + '</div>'));
+			}
+		});
+
+		socket.on('logged out', function() {
+			$('#username').show('slow');
+			$('#message').hide('slow');
+			$('#messages').empty();
+		});
+
 		socket.on('user login', function(message) {
 			$('#messages').append($('<li>').html('<div class="broadcast">'+ message + '</div>'));
 		});
+
 		socket.on('user exit', function(message) {
 			$('#messages').append($('<li>').html('<div class="broadcast">'+ message + '</div>'));
-		});
-		socket.on('chat message', function(data){
-			$('#messages').append($('<li>').html('<div class="msg-container"><div class="username">' +data.name + '</div><div class="timestamp">' + new Date(Number(data.timestamp)) + '</div></div><div class="msg"> ' +data.msg + '</div>'));
-		});
-		socket.on('logged out', function(){
-			$('#username').show('slow');
-			$('#message').hide('slow');
 		});
 
 	</script>

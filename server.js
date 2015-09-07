@@ -29,12 +29,12 @@ app.get('/', function(request, response){
 
 // Login
 io.on('connection', function(socket){
-	
+	console.log('socket connected ' + socket.id);
 	// User entering
-	socket.on('user entered', function(username){
+	socket.on('user entered', function(username) {
 		console.log('user: ' + username);
 		if (userIsLoggedIn(username)) {
-			io.emit('username error', 'This user is already logged in');
+			socket.emit('username error', 'This user is already logged in');
 		} else {
 			users.push({name: username, id: socket.id});
 			db.all('SELECT * from messages ORDER BY timestamp', function(err, rows) {
@@ -42,14 +42,14 @@ io.on('connection', function(socket){
       				console.log(err);
     			} else {
     				console.log(rows);
-      				io.emit('user validated', username, rows);
+      				socket.emit('user validated', username, rows);
     			}
 			});
 		}
 	});
 
 	// Message sent
-	socket.on('chat message', function(data){
+	socket.on('chat message', function(data) {
 		console.log('message: ' + data.msg);
 		data.name = getUserFromId(socket.id);
 		var sqlRequest = "INSERT INTO 'messages' (username, message, timestamp) " +
@@ -62,11 +62,13 @@ io.on('connection', function(socket){
 	socket.on('logout', function(){
 		logoutUser(socket.id);
 		console.log('user disconnected ' + socket.id);
-		io.emit('logged out');
+		socket.emit('logged out');
 	});
+
 	socket.on('disconnect', function(){
 		logoutUser(socket.id);
-		console.log('user disconnected ' + socket.id);
+		console.log('socket disconnected ' + socket.id);
+		socket.emit('logged out');
 	});
 });
 
